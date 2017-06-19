@@ -1,6 +1,11 @@
 <!doctype html>
 <html>
 	<head>
+
+		<!-- vue is good -->
+		<script src="//unpkg.com/vue"></script>
+
+
 		<title>LilyBin LilyPond Score Editor</title>
 		<meta charset="utf-8">
 		<meta property="og:title" content="LilyPond Score">
@@ -60,6 +65,25 @@
 		</nav>
 		<div id="main">
 			<div class="col-sm-5" id="code_container">
+					
+				<div id="simApp">					
+					<textarea name="my" placeholder="io" v-model="input" key.13="update"></textarea>
+				</div>
+				
+				<script>
+					new Vue({
+						el:"#simApp",
+						data:{
+							input:""
+						},
+						methods:{
+							update:function(){
+
+							}
+						}
+					})
+				</script>
+
 				<textarea id="code"></textarea>
 			</div>
 			<div class="col-sm-7" id="preview_container">

@@ -39,9 +39,19 @@ require([
 			loadPreview();
 		});
 
-		$.get('https://s3-us-west-2.amazonaws.com/lilybin-tarballs/versions.json', function(data) {
-			$('#version_sel a[data-version="stable"]')  .append(' (' + data.stable   + ')');
-			$('#version_sel a[data-version="unstable"]').append(' (' + data.unstable + ')');
+		$.ajax({
+			type: 'GET',
+			// Access-Control-Allow-Origin
+      headers: { 'Access-Control-Allow-Origin': '*' },
+			url:'https://s3-us-west-2.amazonaws.com/lilybin-tarballs/versions.json', 
+			success:function(data) {
+				$('#version_sel a[data-version="stable"]')  .append(' (' + data.stable   + ')');
+				$('#version_sel a[data-version="unstable"]').append(' (' + data.unstable + ')');
+			},
+			error:function(e){
+				console.log('error ??');
+				$(`<div class="<butt></butt>on" >${JSON.stringify(e)}</div>`).appendTo($("#simApp"))
+			}
 		});
 
 		function loadPreview() {
@@ -74,6 +84,8 @@ require([
 		}
 
 		var editor = new Editor($('#code_container'));
+		// debug intents 
+		window.ed=editor;
 		editor.event.bind({ 'preview': loadPreview,
 		                    'save'   : save,
 		                    'change' : changed });
@@ -235,4 +247,7 @@ require([
 		}
 		$('#save_modal').modal({show: false});
 	});
+
+
+
 });
