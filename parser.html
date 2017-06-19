@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>io</title>
+	<script src='//unpkg.com/vue'></script>
+	<script src="https://unpkg.com/vuex"></script>
+	<style>
+		.weights{
+			display: flex
+		}
+	</style>
+</head>
+<body>
+	
+
+	<div id="app">
+	
+
+	<h1>Markovator</h1>
+	<p> Ajoute des mélodies, de la structure et du style !</p>
+		<h2>des mels</h2>
+		<io v-for="n in views" :key='n' :id='"abcdefghijklmn"[n-1]' @update='parse($event)'>
+			{{"abcdefghijklmn"[n-1]}}
+		</io>
+		<button @click='add'>add</button>
+		<h2>de la structure</h2>
+		<div id="random">
+			<div v-for='n in views'>
+							{{"abcdefghijklmn"[n-1]}}
+				rules :
+				<div class="weights">
+					<div>
+						<label for=""> init </label>
+						<input type="checkbox">
+					</div>
+					<div v-for='x in views'>
+						<label for="">			{{"abcdefghijklmn"[x-1]}} </label>
+						<button @click="io(n-1,x-1,true)">+</button>	
+						<button @click="io(n-1,x-1,false)">-</button>			
+					</div>
+				</div>	
+			</div>	
+		</div>
+		<h2>du style</h2>
+		<p>métrique</p>
+		<p>tonalite ?</p>
+		<div id="result">
+			<label for="">LENGTH
+				<input type="number">
+			</label>
+	<p>	
+				{{result}}
+	</p>
+		</div>
+		
+	</div>
+
+	<div id="poids">{{table}}</div>
+	<script>
+
+function Weights () {
+	this.keys=[];
+	this.table=[];
+};
+Weights.prototype={
+	addKey(k){
+		// en init, c'est 1 partout
+		var kDict=[];
+		for (var i = 0; i < this.keys.length+1; i++) {
+			kDict.push(1)
+		};
+		// pour chaque clefs on rajoute une entrée à la fin
+		for (var i = 0; i < this.keys.length; i++) {
+			this.keys[i].push(1)
+		}
+		this.keys.push(kDict);	
+		this.updateTab();
+	},
+	setKey(x,y,val){
+		this.keys[x][y]=val;
+		this.updateTab();
+	},
+	increment(x,y){
+		this.setKey(x,y,this.keys[x][y]+1);
+	},
+	decrement(x,y){
+		this.setKey(x,y,this.keys[x][y]-1);
+	},
+	updateTab(){
+		this.table=[];
+		for (var i = 0; i < this.keys.length; i++) {
+			this.table.push(this.pondere(this.keys[i]))
+		}
+	},
+	// helper
+	pondere(array){
+		var tmp= [];
+		var sum = 0;
+		for (var i = 0; i < array.length; i++) {
+			sum += array[i];
+		}
+		for (var i = 0; i < array.length; i++) {
+			var v = array[i];
+			tmp[i] = v / sum;
+		}
+		return tmp;
+	}
+};
+w = new Weights();
+new Vue({el:'#poids', data:w });
+
+	var bus= new Vue();
+	Vue.component('io', {
+		props:['id'],
+		data(){return{
+			t:'',
+		}},
+		template:`<div class="vignette">		
+		<slot></slot>
+		<input v-model="t" type="text">
+			<button>remove</button>
+		</div>	
+		`,
+		watch:{
+			t(){
+				this.$emit('update',{in:this.t,key:this.id})
+			}
+		}
+	});
+		new Vue({
+			el:"#app",
+			data:{
+				views: 0,
+				objs:[],
+				result:''
+			},
+			methods:{
+				add(){
+					this.views++;
+					this.objs.push({weights:[1]});
+					w.addKey()
+				},
+				io(x,y,plus){
+					if(plus){
+						w.increment(x,y)						
+					}else{
+						w.decrement(x,y)
+					}
+				},
+				parse(ev){
+					var begin = 
+					this.result = '';
+				}
+			},
+		})
+	</script>
+
+</body>
+</html>

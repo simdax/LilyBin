@@ -14,6 +14,11 @@ app.use(express.static(__dirname + '/htdocs', {maxage: '1d'}));
 // We don't need the extended features right now.
 app.use(require('body-parser').urlencoded({extended: false}));
 
+
+app.get('/parser', function(req,res) {
+	res.sendFile(__dirname+'/parser.html');
+});
+
 // Trust the proxy
 if (process.env.LILYBIN_PROXY) {
 	app.set('trust proxy', 'loopback');
