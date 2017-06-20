@@ -13,7 +13,8 @@ require.config({
 		CodeMirror: 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.4.0',
 		// CDNJS uses weird paths. Need this hack to allow loading CM addons
 		// which references a nonexistant "../../lib/codemirror".
-		'CodeMirror/lib/codemirror': 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.4.0/codemirror.min'
+		'CodeMirror/lib/codemirror': 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.4.0/codemirror.min',
+		// Vue: 'https://unpkg.com/vue',
 	}
 });
 
@@ -21,8 +22,14 @@ require([
 	'jquery',
 	'Preview',
 	'Editor',
-	'bootstrap'
-], function($, Preview, Editor) {
+	'plugins/parser',
+	'vues/mine',
+	'vues/nav',
+	'bootstrap',
+], function($, Preview, Editor,Parser,app) {
+
+	window.pa = new Parser();
+
 	$(function() {
 		var STAGE = 'https://7icpm9qr6a.execute-api.us-west-2.amazonaws.com/prod/';
 		var score = {};
@@ -50,7 +57,7 @@ require([
 			},
 			error:function(e){
 				console.log('error ??');
-				$(`<div class="<butt></butt>on" >${JSON.stringify(e)}</div>`).appendTo($("#simApp"))
+				// $(`<div class="<butt></butt>on" >${JSON.stringify(e)}</div>`).appendTo($("#simApp"))
 			}
 		});
 
@@ -83,12 +90,24 @@ require([
 			$('#preview_button, #save_button').attr('disabled', false);
 		}
 
+		function updateCode(){
+			var reg = /\{([^}]+)\}/;
+			var code = 	editor.cm.getValue();
+			var res = reg.exec(code)[1];
+			res.replace(/\s/g,'').replace(/(\{|\})/g,'');
+			console.log(app, app.res);
+			ed.cm.replaceRange(app.res+String.fromCharCode(13),{line:3,ch:-1},{line:4,ch:-1})
+			// editor.cm.setValue(code);
+		};
+		window.addEventListener('generate', updateCode);
+
 		var editor = new Editor($('#code_container'));
 		// debug intents 
 		window.ed=editor;
 		editor.event.bind({ 'preview': loadPreview,
 		                    'save'   : save,
-		                    'change' : changed });
+		                    'change' : changed,
+	                    });
 
 		if (score.id) $('#save_button').attr('disabled', true);
 
@@ -247,7 +266,6 @@ require([
 		}
 		$('#save_modal').modal({show: false});
 	});
-
 
 
 });
