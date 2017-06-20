@@ -91,12 +91,9 @@ require([
 		}
 
 		function updateCode(){
-			var reg = /\{([^}]+)\}/;
-			var code = 	editor.cm.getValue();
-			var res = reg.exec(code)[1];
-			res.replace(/\s/g,'').replace(/(\{|\})/g,'');
-			console.log(app, app.res);
-			ed.cm.replaceRange(app.res+String.fromCharCode(13),{line:3,ch:-1},{line:4,ch:-1})
+			// var reg = /\{([^}]+)\}/;
+			console.log(window.pa.set(app.res));
+			ed.cm.replaceRange(window.pa.formatted+String.fromCharCode(13),{line:3,ch:-1},{line:4,ch:-1})
 			// editor.cm.setValue(code);
 		};
 		window.addEventListener('generate', updateCode);
